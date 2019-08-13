@@ -37,6 +37,9 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                     onSkipClick: function () {
 
                     },
+                    onCloseClick: function () {
+
+                    },
 
                     animation_time: 800
                 };
@@ -124,6 +127,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 
                 defs.append(marker.append(polilyne)).appendTo(that.$svg);
 
+
                 that.kinetic_stage = new Kinetic.Stage({
                     container: that.cl.kinetic_container,
                     width: that.canvas_size.w,
@@ -168,7 +172,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                 that.$close_btn = $('<div>', {'class': that.cl.close_btn}).appendTo(that.enjoyhint).html('').click(function (e) {
 
                     that.hide();
-                    that.options.onSkipClick();
+                    that.options.onCloseClick();
                 });
 
                 that.$canvas.mousedown(function (e) {
@@ -337,7 +341,6 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                                 y1 = labelRect.top;
                                 bezX = x1;
                                 bezY = y1;
-                                console.log("ok");
                             }
 
                             if (window.innerWidth < 900) {
@@ -602,6 +605,8 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 
                 that.renderArrow = function (data) {
 
+                    if (window.innerWidth >= 640) {
+
                         var x_from = data.x_from || 0;
                         var y_from = data.y_from || 0;
                         var x_to = data.x_to || 0;
@@ -609,9 +614,6 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                         var by_top_side = data.by_top_side;
                         var control_point_x = 0;
                         var control_point_y = 0;
-                    
-                    if (window.innerWidth >= 640) {
-
                         if (by_top_side) {
 
                             if (y_from >= y_to) {
@@ -853,6 +855,9 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 
                     }
 
+                    label_y = label_y + (data.labelOffsetY ? data.labelOffsetY : 0);
+                    label_x = label_x + (data.labelOffsetX ? data.labelOffsetX : 0);
+
                     var label_data = that.renderLabel({
                         x: label_x,
                         y: label_y,
@@ -907,6 +912,8 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                     var is_mid_top = (label_data.bottom <= shape_data.y && !is_top);
                     var is_mid_bottom = (label_data.top >= shape_data.y && !is_bottom);
 
+                    var is_extra_left = (label_data.right < shape_data.right);
+                    var is_extra_right = (label_data.left > shape_data.left);
 
                     function setArrowData(l_s, c_s, a_s) {
 
@@ -953,9 +960,12 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                         } else if (is_bottom) {
 
                             setArrowData('top', 'bottom', 'bottom');
+                        } else if (is_extra_left) {
+
+                            setArrowData('right', 'top', 'right');
                         } else {
 
-                            return;
+                            setArrowData('left', 'top', 'left');
                         }
 
                     } else if (is_left) {
